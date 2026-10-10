@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>风铃溪谷 · Windbell Valley</title>
+<style>
+  :root{
+    --cream:#faf6ec; --paper:#f3ecdb; --ink:#4a4238; --sage:#7d8f69;
+    --sage-d:#5f7050; --ochre:#c98f3d; --teal:#3f6b6b; --line:#e2d6bd;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--cream); color:var(--ink); line-height:1.6;
+  }
+  header{
+    text-align:center; padding:38px 20px 22px;
+    background:linear-gradient(180deg,#f7f1de 0%,var(--cream) 100%);
+    border-bottom:1px solid var(--line);
+  }
+  header h1{font-size:2.2rem; letter-spacing:.35em; font-weight:700;}
+  header h1 .en{display:block; font-size:.95rem; letter-spacing:.5em; color:var(--sage-d); margin-top:8px; font-weight:400;}
+  header p{margin-top:12px; color:#8a7d66; font-size:.95rem; max-width:640px; margin-left:auto; margin-right:auto;}
+  .tabs{display:flex; justify-content:center; gap:12px; margin:26px 0 6px;}
+  .tab{
+    border:2px solid var(--sage); background:#fff; color:var(--sage-d);
+    padding:9px 30px; border-radius:999px; font-size:1rem; cursor:pointer;
+    transition:all .2s;
+  }
+  .tab.active, .tab:hover{background:var(--sage); color:#fff;}
+  main{max-width:1060px; margin:0 auto; padding:10px 20px 40px;}
+  .view{display:none;}
+  .view.active{display:block;}
+  .stage{
+    border-radius:14px; overflow:hidden; box-shadow:0 10px 34px rgba(90,80,60,.16);
+    border:1px solid var(--line); background:#000;
+  }
+  video{width:100%; display:block; aspect-ratio:16/9; background:#000;}
+  .controls{
+    display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+    margin:18px 0 6px;
+  }
+  .btn{
+    border:1.5px solid var(--sage); background:#fff; color:var(--sage-d);
+    padding:8px 20px; border-radius:999px; font-size:.92rem; cursor:pointer;
+    transition:all .2s; white-space:nowrap;
+  }
+  .btn:hover{background:var(--sage); color:#fff;}
+  .btn.primary{background:var(--ochre); border-color:var(--ochre); color:#fff;}
+  .btn.primary:hover{background:#b57e2f;}
+  .btn.on{background:var(--sage); color:#fff;}
+  .hint{text-align:center; color:#a2937a; font-size:.85rem; margin-top:10px;}
+  #mapWrap{
+    overflow:hidden; cursor:grab; border-radius:14px;
+    box-shadow:0 10px 34px rgba(90,80,60,.16); border:1px solid var(--line);
+    background:var(--paper); touch-action:pan-y;
+  }
+  #mapWrap.grabbing{cursor:grabbing;}
+  #mapInner{display:flex; width:max-content;}
+  #mapInner img{display:block; height:min(46vh,380px); width:auto; user-select:none; -webkit-user-drag:none; pointer-events:none;}
+  .districts{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:18px 0 6px;}
+  .downloads{display:flex; gap:12px; justify-content:center; margin-top:26px; flex-wrap:wrap;}
+  .downloads a{
+    text-decoration:none; border:1.5px solid var(--teal); color:var(--teal);
+    padding:9px 26px; border-radius:999px; font-size:.92rem; background:#fff;
+    transition:all .2s;
+  }
+  .downloads a:hover{background:var(--teal); color:#fff;}
+  footer{
+    text-align:center; padding:26px 20px 40px; color:#a2937a; font-size:.82rem;
+    border-top:1px solid var(--line); margin-top:20px;
+  }
+  footer .t{letter-spacing:.3em; margin-bottom:6px; color:var(--sage-d);}
+</style>
+</head>
+<body>
+<header>
+  <h1>风铃溪谷<span class="en">WINDBELL VALLEY</span></h1>
+  <p>邮差少女与白狐沿着春日小路，走过山坡住居、村中集市和河岸水车。<br>手绘村庄游览 · 原创圆舞曲配乐</p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" id="tabVideo">🎬 动画游览</button>
+  <button class="tab" id="tabMap">🗺 大地图</button>
+</div>
+
+<main>
+  <!-- 视频游览 -->
+  <section class="view active" id="viewVideo">
+    <div class="stage">
+      <video id="tour" src="assets/scene.mp4" poster="assets/scene-poster.png"
+             muted autoplay loop playsinline preload="auto"></video>
+    </div>
+    <div class="controls">
+      <button class="btn primary" id="musicBtn">🔇 开启音乐</button>
+      <button class="btn" data-jump="6">🌷 园丁浇花</button>
+      <button class="btn" data-jump="22">🍞 面包师挥手</button>
+      <button class="btn" data-jump="39">🎶 老人吹笛</button>
+    </div>
+    <p class="hint">默认静音自动播放 · 点击「开启音乐」收听原创圆舞曲 · 跳转按钮带你去看三位村民</p>
+  </section>
+
+  <!-- 大地图 -->
+  <section class="view" id="viewMap">
+    <div id="mapWrap">
+      <div id="mapInner"><img src="assets/windbell-valley.png" alt="风铃溪谷完整地图" draggable="false"></div>
+    </div>
+    <div class="districts">
+      <button class="btn" data-district="0">🏠 山坡住居</button>
+      <button class="btn" data-district="1">🥖 村中集市</button>
+      <button class="btn" data-district="2">🌊 河岸水车</button>
+    </div>
+    <p class="hint">按住拖动横向游览 · 6324 × 724 完整手绘地图</p>
+  </section>
+
+  <div class="downloads">
+    <a href="assets/scene.mp4" download>⬇ 下载游览视频</a>
+    <a href="assets/windbell-valley.png" download>⬇ 下载完整地图</a>
+  </div>
+</main>
+
+<footer>
+  <div class="t">风铃溪谷 · WINDBELL VALLEY</div>
+  <div>手绘村庄 · 角色动画 · 原创配乐 — 均为本项目原创生成</div>
+</footer>
+
+<script>
+(function(){
+  var video = document.getElementById('tour');
+  var musicBtn = document.getElementById('musicBtn');
+
+  // 视图切换
+  var tabVideo = document.getElementById('tabVideo'),
+      tabMap = document.getElementById('tabMap'),
+      viewVideo = document.getElementById('viewVideo'),
+      viewMap = document.getElementById('viewMap');
+  function show(which){
+    var isV = which === 'video';
+    tabVideo.classList.toggle('active', isV);
+    tabMap.classList.toggle('active', !isV);
+    viewVideo.classList.toggle('active', isV);
+    viewMap.classList.toggle('active', !isV);
+    if(!isV){ video.pause(); } else { video.play().catch(function(){}); }
+  }
+  tabVideo.onclick = function(){ show('video'); };
+  tabMap.onclick = function(){ show('map'); };
+
+  // 音乐开关（视频自带音频）
+  function setMusic(on){
+    video.muted = !on;
+    musicBtn.textContent = on ? '🔊 音乐开' : '🔇 开启音乐';
+    musicBtn.classList.toggle('on', on);
+  }
+  musicBtn.onclick = function(){ setMusic(video.muted); };
+
+  // NPC 跳转
+  document.querySelectorAll('[data-jump]').forEach(function(b){
+    b.onclick = function(){
+      show('video');
+      var t = parseFloat(b.getAttribute('data-jump'));
+      try { video.currentTime = t; } catch(e){}
+      video.play().catch(function(){});
+      // 跳转后保持当前音乐状态
+    };
+  });
+
+  // 地图拖动
+  var wrap = document.getElementById('mapWrap');
+  var down = false, startX = 0, startL = 0;
+  wrap.addEventListener('pointerdown', function(e){
+    down = true; startX = e.clientX; startL = wrap.scrollLeft;
+    wrap.classList.add('grabbing'); wrap.setPointerCapture(e.pointerId);
+  });
+  wrap.addEventListener('pointermove', function(e){
+    if(!down) return;
+    wrap.scrollLeft = startL - (e.clientX - startX);
+  });
+  ['pointerup','pointercancel','pointerleave'].forEach(function(ev){
+    wrap.addEventListener(ev, function(){ down = false; wrap.classList.remove('grabbing'); });
+  });
+
+  // 街区跳转（按地图比例）
+  document.querySelectorAll('[data-district]').forEach(function(b){
+    b.onclick = function(){
+      var i = parseInt(b.getAttribute('data-district'), 10);
+      var img = wrap.querySelector('img');
+      var scale = img.clientWidth / 6324;
+      var centers = [1086, 3162, 5238]; // 三街区中心（地图坐标）
+      var target = centers[i] * scale - wrap.clientWidth / 2;
+      wrap.scrollTo({left: Math.max(0, target), behavior: 'smooth'});
+    };
+  });
+
+  // 自动播放失败时显示播放提示（浏览器策略）
+  video.play().catch(function(){});
+})();
+</script>
+</body>
+</html>
